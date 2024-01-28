@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -11,7 +10,6 @@ void main() async {
   );
   runApp(const SwitchApp());
 }
-
 
 // Update the state of "light1" in Firebase Realtime Database
 void updateLight1State(bool value) {
@@ -31,17 +29,15 @@ void updateFanState(bool value) {
   fanRef.set(value);
 }
 
-
-
 class SwitchApp extends StatelessWidget {
   const SwitchApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
+      theme: ThemeData.dark(useMaterial3: true),
       home: Scaffold(
-        appBar: AppBar(title: const Text('Switch Sample')),
+        appBar: AppBar(title: const Text('Aura Home',style:TextStyle(fontWeight: FontWeight.bold),)),
         body: const Center(
           child: SwitchExample(),
         ),
@@ -61,44 +57,59 @@ class _SwitchExampleState extends State<SwitchExample> {
   bool light1 = true;
   bool light2 = false;
   bool fan = true;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        SwitchListTile(
-          title: const Text('Light 1'),
-          value: light1,
-          onChanged: (bool value) {
-            setState(() {
-              light1 = value;
-            });
-            updateLight1State(value);
-          },
-        ),
-        SwitchListTile(
-          title: const Text('Light 2'),
-          value: light2,
-          onChanged: (bool value) {
-            setState(() {
-              light2 = value;
-            });
-            updateLight2State(value);
-          },
-        ),
-        
-        SwitchListTile(
-          title: const Text('Fan'),
-          value: fan,
-          onChanged: (bool value) {
-            setState(() {
-              fan = value;
-            });
-            updateFanState(value);
-          },
-        ),
+        buildCard('Light 1', light1, (value) {
+          setState(() {
+            light1 = value;
+          });
+          updateLight1State(value);
+        }),
+        buildCard('Light 2', light2, (value) {
+          setState(() {
+            light2 = value;
+          });
+          updateLight2State(value);
+        }),
+        buildCard('Fan', fan, (value) {
+          setState(() {
+            fan = value;
+          });
+          updateFanState(value);
+        }),
       ],
+    );
+  }
+  Widget buildCard(String title, bool value, Function(bool) onChanged) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double cardWidth = screenWidth - 24.0;
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: cardWidth,
+        height: 80.0, // Adjust the height as needed
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0),
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
