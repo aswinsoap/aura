@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1087997266313",
+    "firebase_url": "https://aura-8266-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "aura-8266",
+    "storage_bucket": "aura-8266.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087997266313:android:fd6d5e84396cb6937cf958",
+        "android_client_info": {
+          "package_name": "com.example.aura"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUW-xntfJfxYbaEZ6Fa6kpgg7SI1vXERs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
