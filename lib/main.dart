@@ -11,22 +11,16 @@ void main() async {
   runApp(const SwitchApp());
 }
 
-// Update the state of "light1" in Firebase Realtime Database
 void updateLight1State(bool value) {
-  DatabaseReference light1Ref = FirebaseDatabase.instance.ref().child('light1');
-  light1Ref.set(value);
+  FirebaseDatabase.instance.ref().child('light1').set(value);
 }
 
-// Update the state of "light2" in Firebase Realtime Database
 void updateLight2State(bool value) {
-  DatabaseReference light2Ref = FirebaseDatabase.instance.ref().child('light2');
-  light2Ref.set(value);
+  FirebaseDatabase.instance.ref().child('light2').set(value);
 }
 
-// Update the state of "fan" in Firebase Realtime Database
 void updateFanState(bool value) {
-  DatabaseReference fanRef = FirebaseDatabase.instance.ref().child('fan');
-  fanRef.set(value);
+  FirebaseDatabase.instance.ref().child('fan').set(value);
 }
 
 class SwitchApp extends StatelessWidget {
@@ -35,9 +29,15 @@ class SwitchApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(useMaterial3: true),
+      theme: ThemeData.light(useMaterial3: true),
       home: Scaffold(
-        appBar: AppBar(title: const Text('Aura Home',style:TextStyle(fontWeight: FontWeight.bold),)),
+        appBar: AppBar(
+          title: const Text(
+            'Aura Home',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          actions: const [],
+        ),
         body: const Center(
           child: SwitchExample(),
         ),
@@ -57,59 +57,66 @@ class _SwitchExampleState extends State<SwitchExample> {
   bool light1 = false;
   bool light2 = false;
   bool fan = false;
+  double temperature = 0.0;
+  double humidity = 0.0;
+  late DatabaseReference _temperatureRef;
+  late DatabaseReference _humidityRef;
+
+  @override
+  void initState() {
+    super.initState();
+    _temperatureRef = FirebaseDatabase.instance.ref().child('temperature');
+    _temperatureRef.onValue.listen((event) {
+      setState(() {
+        temperature = double.tryParse(event.snapshot.value.toString()) ?? 0.0;
+      });
+    });
+
+    _humidityRef = FirebaseDatabase.instance.ref().child('humidity');
+    _humidityRef.onValue.listen((event) {
+      setState(() {
+        humidity = double.tryParse(event.snapshot.value.toString()) ?? 0.0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _temperatureRef.onDisconnect();
+    _humidityRef.onDisconnect();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        buildCard('Light 1', light1, (value) {
-          setState(() {
-            light1 = value;
-          });
-          updateLight1State(value);
-        }),
-        buildCard('Light 2', light2, (value) {
-          setState(() {
-            light2 = value;
-          });
-          updateLight2State(value);
-        }),
-        buildCard('Fan', fan, (value) {
-          setState(() {
-            fan = value;
-          });
-          updateFanState(value);
-        }),
-      ],
-    );
-  }
-  Widget buildCard(String title, bool value, Function(bool) onChanged) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double cardWidth = screenWidth - 24.0;
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        width: cardWidth,
-        height: 80.0, // Adjust the height as needed
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Text(
-                title,
+        SizedBox(
+          height: 120.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Text(
+                '$temperature°C',
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0),
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.w300,
+                  fontSize: 56.0,
+                ),
               ),
-            ),
-            Switch(
-              value: value,
-              onChanged: onChanged,
-            ),
-          ],
+              Text(
+                '$humidity%',
+                style: const TextStyle(
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.w300,
+                  fontSize: 56.0,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
