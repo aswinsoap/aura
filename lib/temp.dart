@@ -29,27 +29,49 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Flutter Card Example'),
       ),
-      body: GridView.count(
-        crossAxisCount: 2, // Number of columns in the grid
-        children: List.generate(4, (index) {
-          return const CardWidget();
-        }),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0), // Add padding around the GridView
+        child: GridView.count(
+          crossAxisCount: 2, // Number of columns in the grid
+          crossAxisSpacing: 16.0, // Add spacing between the cards horizontally
+          mainAxisSpacing: 16.0, // Add spacing between the cards vertically
+          children: List.generate(4, (index) {
+            return CardWidget(index: index); // Pass index to create different colors
+          }),
+        ),
       ),
     );
   }
 }
 
-class CardWidget extends StatelessWidget {
-  const CardWidget({super.key});
+class CardWidget extends StatefulWidget {
+  final int index;
+
+  const CardWidget({super.key, required this.index});
+
+  @override
+  _CardWidgetState createState() => _CardWidgetState();
+}
+
+class _CardWidgetState extends State<CardWidget> {
+  bool isSwitched = false;
+
+  // Define a list of pastel colors
+  final List<Color> pastelColors = [
+    Colors.pink[100]!,
+    Colors.blue[100]!,
+    Colors.green[100]!,
+    Colors.orange[100]!,
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 0.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+        borderRadius: BorderRadius.circular(30.0), // Increase the radius to make it more rounded  
       ),
-      color: Colors.pink[100],
+      color: pastelColors[widget.index % pastelColors.length], // Assign different color based on index
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -63,18 +85,25 @@ class CardWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 18.0),
                 ),
                 Switch(
-                  value: false,
+                  value: isSwitched,
                   onChanged: (value) {
+                    setState(() {
+                      isSwitched = value;
+                    });
                     // Handle switch state changes
+                    // Here you can implement the logic for switch state changes
                   },
+                  activeColor: Colors.grey[900],
+                  activeTrackColor: Colors.grey[200],
                 ),
               ],
             ),
-            // Add additional content below if needed
+            // Add additional content below if needed  
           ],
+
         ),
       ),
     );
   }
-}
 
+}

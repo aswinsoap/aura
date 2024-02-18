@@ -1,14 +1,14 @@
-import 'package:aura/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:aura/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const SwitchApp());
+  runApp(const MyApp());
 }
 
 void updateLight1State(bool value) {
@@ -23,40 +23,30 @@ void updateFanState(bool value) {
   FirebaseDatabase.instance.ref().child('fan').set(value);
 }
 
-class SwitchApp extends StatelessWidget {
-  const SwitchApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(useMaterial3: true),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Aura Home',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          actions: const [],
-        ),
-        body: const Center(
-          child: SwitchExample(),
-        ),
+      title: 'Aura Home',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      home: const MyHomePage(),
     );
   }
 }
 
-class SwitchExample extends StatefulWidget {
-  const SwitchExample({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<SwitchExample> createState() => _SwitchExampleState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _SwitchExampleState extends State<SwitchExample> {
-  bool light1 = false;
-  bool light2 = false;
-  bool fan = false;
+class _MyHomePageState extends State<MyHomePage> {
   double temperature = 0.0;
   double humidity = 0.0;
   late DatabaseReference _temperatureRef;
@@ -89,34 +79,111 @@ class _SwitchExampleState extends State<SwitchExample> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: 120.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text(
-                '$temperature°C',
-                style: const TextStyle(
-                  fontFamily: 'Lato',
-                  fontWeight: FontWeight.w300,
-                  fontSize: 56.0,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Aura Home'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  '$temperature°C',
+                  style: const TextStyle(
+                    fontFamily: 'Lato',
+                    fontWeight: FontWeight.w300,
+                    fontSize: 36.0,
+                  ),
                 ),
+                Text(
+                  '$humidity%',
+                  style: const TextStyle(
+                    fontFamily: 'Lato',
+                    fontWeight: FontWeight.w300,
+                    fontSize: 36.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+                children: List.generate(4, (index) {
+                  return CardWidget(
+                    index: index,
+                  );
+                }),
               ),
-              Text(
-                '$humidity%',
-                style: const TextStyle(
-                  fontFamily: 'Lato',
-                  fontWeight: FontWeight.w300,
-                  fontSize: 56.0,
-                ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CardWidget extends StatefulWidget {
+  final int index;
+
+  const CardWidget({
+    super.key,
+    required this.index,
+  });
+
+  @override
+  _CardWidgetState createState() => _CardWidgetState();
+}
+
+class _CardWidgetState extends State<CardWidget> {
+  bool isSwitched = false;
+
+  final List<Color> pastelColors = [
+    Colors.pink[100]!,
+    Colors.blue[100]!,
+    Colors.green[100]!,
+    Colors.orange[100]!,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+  return Card(
+    elevation: 0.0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(30.0),
+    ),
+    color: pastelColors[widget.index % pastelColors.length],
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Light',
+                style: TextStyle(fontSize: 18.0), 
+              ),
+              Switch(
+                value: false,
+                onChanged: null,
+                activeColor: Colors.grey[900],
+                activeTrackColor: Colors.grey[200],
               ),
             ],
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 }
