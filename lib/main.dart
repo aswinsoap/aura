@@ -94,19 +94,27 @@ class _SwitchExampleState extends State<SwitchExample> {
       children: <Widget>[
         SizedBox(
           height: 120.0,
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Text(
-                '$temperature°C',
-                style: const TextStyle(
-                  fontFamily: 'Lato',
-                  fontWeight: FontWeight.w300,
-                  fontSize: 56.0,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.water_drop
+                  ),
+                  Text(
+                    '$humidity%',
+                    style: const TextStyle(
+                      fontFamily: 'Lato',
+                      fontWeight: FontWeight.w300,
+                      fontSize: 24.0,
+                    ),
+                  ),
+                ],
               ),
               Text(
-                '$humidity%',
+                '$temperature°C',
                 style: const TextStyle(
                   fontFamily: 'Lato',
                   fontWeight: FontWeight.w300,
