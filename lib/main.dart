@@ -10,7 +10,7 @@ void main() async {
   );
   runApp(const SwitchApp());
 }
-
+                                          
 void updateLight1State(bool value) {
   FirebaseDatabase.instance.ref().child('light1').set(value);
 }
